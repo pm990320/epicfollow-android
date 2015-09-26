@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">EpicFollow</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_twitter">Twitter</string>
+
+    <string name="title_featured">Featured</string>
+    <string name="title_details">Details</string>
+    <string name="title_notfollowing">Not Following</string>
+    <string name="title_fans">Fans</string>
+    <string name="title_activity_twitter_featured">Twitter - Featured</string>
+    <string name="follow_text">Follow</string>
+    <string name="unfollow_text">Unfollow</string>
+    <string name="feature_text">Feature Me</string>
+    <string name="title_activity_twitter_login">Login with Twitter</string>
+    <string name="add_twitter_account_button_text">Add Twitter account</string>
+</resources>
