@@ -104,7 +104,8 @@ public class TwitterFans extends Fragment {
                                         holder.followButton.setBackgroundResource(R.color.md_grey_600);
                                     }
                                 } else {
-                                    holder.followButton.setVisibility(View.INVISIBLE);
+                                    holder.followButton.setEnabled(false);
+                                    holder.followButton.setText("Followed");
                                 }
                             }
                         }.execute(user.getUser_id());
