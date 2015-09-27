@@ -52,6 +52,7 @@ public class TwitterNotFollowing extends Fragment {
             public TextView followersCount;
             public TextView followingCount;
             public Button unfollowButton;
+            public Button safelistButton;
 
             public ViewHolder(View v) {
                 super(v);
@@ -62,12 +63,25 @@ public class TwitterNotFollowing extends Fragment {
                 followersCount = (TextView) v.findViewById(R.id.notfollowing_followers);
                 followingCount = (TextView) v.findViewById(R.id.notfollowing_following);
                 unfollowButton = (Button) v.findViewById(R.id.notfollowing_unfollow_button);
+                safelistButton = (Button) v.findViewById(R.id.notfollowing_safelist_button);
 
                 unfollowButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        unfollowButton.setVisibility(View.INVISIBLE);
+                        safelistButton.setVisibility(View.INVISIBLE);
+                        unfollowButton.setEnabled(false);
+                        unfollowButton.setText("Unfollowed");
                         new UnFollowTask().execute(users.get(getAdapterPosition()).getUser_id());
+                    }
+                });
+
+                safelistButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        unfollowButton.setVisibility(View.INVISIBLE);
+                        safelistButton.setEnabled(false);
+                        safelistButton.setText("Safelisted");
+                        new SafelistTask().execute(users.get(getAdapterPosition()).getUser_id());
                     }
                 });
             }
@@ -102,9 +116,8 @@ public class TwitterNotFollowing extends Fragment {
             return vh;
         }
 
-        protected class UnFollowTask extends AsyncTask<String, Void, Void> {
+        protected static class UnFollowTask extends AsyncTask<String, Void, Void> {
             private List<TwitterUser> users;
-
             public UnFollowTask() { }
 
             private Runnable runafter;
@@ -133,6 +146,52 @@ public class TwitterNotFollowing extends Fragment {
                 }
 
                 String res = EpicFollowAPI.post("/twitter/unfollow", data);
+                try {
+                    JSONObject obj = new JSONObject(res);
+                    if (!obj.getBoolean("success")) {
+                        Log.e(LOG_TAG, "Error. Message: " + obj.getString("message"));
+                    } else {
+                        Log.i(LOG_TAG, "JSON response: " + obj);
+                        success = true;
+                    }
+                } catch (JSONException e) {
+                    Log.e(LOG_TAG, "JSON parsing exception", e);
+                }
+                return null;
+            }
+        }
+
+        protected class SafelistTask extends AsyncTask<String, Void, Void> {
+            private List<TwitterUser> users;
+
+            public SafelistTask() { }
+
+            private Runnable runafter;
+            public SafelistTask(Runnable runafter) {
+                this.runafter = runafter;
+            }
+
+            public boolean success = false;
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+                if (runafter != null) {
+                    runafter.run();
+                }
+            }
+
+            @Override
+            protected Void doInBackground(String... params) {
+                JSONObject data = new JSONObject();
+                try {
+                    data.put("user_id", params[0]);
+                } catch (JSONException e) {
+                    Log.e(LOG_TAG, "Really unusual JSON exception :O", e);
+                    return null;
+                }
+
+                String res = EpicFollowAPI.post("/twitter/safelist", data);
                 try {
                     JSONObject obj = new JSONObject(res);
                     if (!obj.getBoolean("success")) {

@@ -51,8 +51,10 @@
             android:layout_height="wrap_content"
             android:focusableInTouchMode="false"
             android:baselineAligned="true"
-            android:weightSum="3"
-            android:layout_gravity="top">
+            android:weightSum="2"
+            android:layout_gravity="top"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp">
 
             <TextView
                 android:layout_width="0dp"
@@ -73,12 +75,31 @@
                 android:layout_gravity="center_vertical"
                 android:gravity="center_vertical|center_horizontal" />
 
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="2">
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:text="@string/safelist_text"
+                android:id="@+id/notfollowing_safelist_button"
+                android:layout_weight="1"
+                android:background="@color/md_light_blue_500"
+                android:layout_marginRight="5dp" />
+
             <Button
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:text="@string/unfollow_text"
                 android:id="@+id/notfollowing_unfollow_button"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:background="@color/md_deep_orange_400"
+                android:layout_marginLeft="5dp" />
         </LinearLayout>
 
     </LinearLayout>
