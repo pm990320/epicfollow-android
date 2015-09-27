@@ -9,9 +9,9 @@
     <string name="title_details">Details</string>
     <string name="title_notfollowing">Not Following</string>
     <string name="title_fans">Fans</string>
-    <string name="title_activity_twitter_featured">Twitter - Featured</string>
     <string name="follow_text">Follow</string>
     <string name="unfollow_text">Unfollow</string>
+    <string name="safelist_text">Safelist</string>
     <string name="feature_text">Feature Me</string>
     <string name="title_activity_twitter_login">Login with Twitter</string>
     <string name="add_twitter_account_button_text">Add Twitter account</string>
