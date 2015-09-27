@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="primaryBackgroundColor">@color/md_orange_500</color>
-    <color name="secondaryBackgroundColor">@color/md_orange_800</color>
+    <color name="secondaryBackgroundColor">@color/md_orange_700</color>
     <color name="accentBackgroundColor">@color/md_blue_500</color>
     <color name="backgroundColor">@color/md_grey_300</color>
     <color name="primaryTextColor">@color/md_white_1000</color>
