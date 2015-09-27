@@ -93,7 +93,8 @@ public class TwitterFeatured extends Fragment {
                 holder.followButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(final View v) {
-                        holder.followButton.setVisibility(View.INVISIBLE);
+                        holder.followButton.setEnabled(false);
+                        holder.followButton.setText("Followed");
                         new FollowTask(){
                             @Override
                             protected void onPostExecute(String message) {
