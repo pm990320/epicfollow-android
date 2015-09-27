@@ -17,13 +17,13 @@ import com.simplysortedsoftware.epicfollow.twitter.TwitterNotFollowing;
 import java.util.Locale;
 
 public class TwitterActivity extends BaseActivity {
-    TabLayout tabLayout;
-    SectionsPagerAdapter mSectionsPagerAdapter;
+    private TabLayout tabLayout;
+    private SectionsPagerAdapter mSectionsPagerAdapter;
 
     /**
      * The {@link ViewPager} that will host the section contents.
      */
-    ViewPager mViewPager;
+    private ViewPager mViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,8 +56,6 @@ public class TwitterActivity extends BaseActivity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
         return super.onOptionsItemSelected(item);
     }
 

@@ -17,7 +17,7 @@ import java.net.URL;
 
 public class TwitterLoginActivity extends BaseActivity {
     private static String LOG_TAG = TwitterLoginActivity.class.getSimpleName();
-    WebView loginWebView;
+    private WebView loginWebView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,8 +79,6 @@ public class TwitterLoginActivity extends BaseActivity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
         return super.onOptionsItemSelected(item);
     }
 }

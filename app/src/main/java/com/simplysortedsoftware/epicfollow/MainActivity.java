@@ -24,13 +24,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends BaseActivity {
-    private static String LOG_TAG = MainActivity.class.getSimpleName();
+    private static final String LOG_TAG = MainActivity.class.getSimpleName();
     public static TwitterUsersSession session;
 
-    Button addTwitterAccountButton;
-    LinearLayout buttonsView;
+    private Button addTwitterAccountButton;
+    private LinearLayout buttonsView;
 
-    TwitterUsersSession twitterUsersSession;
+    private TwitterUsersSession twitterUsersSession;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,8 +91,8 @@ public class MainActivity extends BaseActivity {
         STRAIGHT_TO_TWITTER
     }
 
-    protected class LoginAccountTask extends AsyncTask<Void, Void, Void> {
-        String qsparams;
+    class LoginAccountTask extends AsyncTask<Void, Void, Void> {
+        final String qsparams;
 
         Intent i = new Intent(MainActivity.this, TwitterLoginActivity.class);
         RedirectType redirectType = RedirectType.TO_LOGIN_SCREEN;
@@ -131,7 +131,7 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    protected class GetLoggedInUsersTask extends AsyncTask<Void, Void, TwitterUsersSession> {
+    private class GetLoggedInUsersTask extends AsyncTask<Void, Void, TwitterUsersSession> {
         @Override
         protected TwitterUsersSession doInBackground(Void... params) {
             String res = EpicFollowAPI.get("/users/loggedin");
@@ -192,7 +192,7 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    protected void setButtonsEnabled(boolean bool) {
+    private void setButtonsEnabled(boolean bool) {
         addTwitterAccountButton.setEnabled(bool);
         for (int i = 0; i < buttonsView.getChildCount(); i++) {
             View but = buttonsView.getChildAt(i);
@@ -212,9 +212,6 @@ public class MainActivity extends BaseActivity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-
 
         return super.onOptionsItemSelected(item);
     }

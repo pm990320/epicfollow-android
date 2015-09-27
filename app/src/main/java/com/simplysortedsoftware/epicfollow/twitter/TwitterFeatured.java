@@ -31,10 +31,10 @@ import java.util.List;
 
 public class TwitterFeatured extends Fragment {
     private static String LOG_TAG = TwitterFeatured.class.getSimpleName();
-    RecyclerView recyclerView;
-    TwitterFeaturedAdapter adapter;
-    RecyclerView.LayoutManager layoutManager;
-    SwipeRefreshLayout srl;
+    private RecyclerView recyclerView;
+    private TwitterFeaturedAdapter adapter;
+    private RecyclerView.LayoutManager layoutManager;
+    private SwipeRefreshLayout srl;
 
     public static class TwitterFeaturedAdapter extends RecyclerView.Adapter<TwitterFeaturedAdapter.ViewHolder> {
         public final List<TwitterUser> users;
@@ -86,7 +86,7 @@ public class TwitterFeatured extends Fragment {
             holder.followingCount.setText(Integer.toString(user.getFollowingCount()) + " following");
 
             // check if self in featured users
-            if (user.getUser_id() == MainActivity.session.getLoggedInUserID()) {
+            if (user.getUser_id().equals(MainActivity.session.getLoggedInUserID())) {
                 holder.followButton.setVisibility(View.INVISIBLE);
             } else {
                 holder.followButton.setOnClickListener(new View.OnClickListener() {
@@ -104,11 +104,10 @@ public class TwitterFeatured extends Fragment {
             // create a new view
             View v = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.featured_card, parent, false);
-            ViewHolder vh = new ViewHolder(v);
-            return vh;
+            return new ViewHolder(v);
         }
 
-        protected class FollowTask extends AsyncTask<String, Void, Void> {
+        class FollowTask extends AsyncTask<String, Void, Void> {
             private List<TwitterUser> users;
 
             public FollowTask() { }
@@ -189,7 +188,7 @@ public class TwitterFeatured extends Fragment {
         return v;
     }
 
-    protected class GetFeaturedTask extends AsyncTask<Void, Void, Void> {
+    class GetFeaturedTask extends AsyncTask<Void, Void, Void> {
         private List<TwitterUser> users;
 
         public GetFeaturedTask() { }

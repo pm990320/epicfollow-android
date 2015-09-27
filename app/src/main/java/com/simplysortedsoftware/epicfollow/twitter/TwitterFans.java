@@ -30,10 +30,10 @@ import java.util.List;
 
 public class TwitterFans extends Fragment {
     private static String LOG_TAG = TwitterFans.class.getSimpleName();
-    RecyclerView recyclerView;
-    TwitterFansAdapter adapter;
-    RecyclerView.LayoutManager layoutManager;
-    SwipeRefreshLayout srl;
+    private RecyclerView recyclerView;
+    private TwitterFansAdapter adapter;
+    private RecyclerView.LayoutManager layoutManager;
+    private SwipeRefreshLayout srl;
 
     public static class TwitterFansAdapter extends RecyclerView.Adapter<TwitterFansAdapter.ViewHolder> {
         public final List<TwitterUser> users;
@@ -102,11 +102,11 @@ public class TwitterFans extends Fragment {
             // create a new view
             View v = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.fans_card, parent, false);
-            ViewHolder vh = new ViewHolder(v);
-            return vh;
+
+            return new ViewHolder(v);
         }
 
-        protected class FollowTask extends AsyncTask<String, Void, Void> {
+        class FollowTask extends AsyncTask<String, Void, Void> {
             private List<TwitterUser> users;
 
             public FollowTask() { }
@@ -185,7 +185,7 @@ public class TwitterFans extends Fragment {
         return v;
     }
 
-    protected class GetFansTask extends AsyncTask<Void, Void, Void> {
+    class GetFansTask extends AsyncTask<Void, Void, Void> {
         private List<TwitterUser> users;
 
         public GetFansTask() { }

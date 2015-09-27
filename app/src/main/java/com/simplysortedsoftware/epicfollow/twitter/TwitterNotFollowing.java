@@ -30,10 +30,10 @@ import java.util.List;
 
 public class TwitterNotFollowing extends Fragment {
     private static String LOG_TAG = TwitterNotFollowing.class.getSimpleName();
-    RecyclerView recyclerView;
-    TwitterNotFollowingAdapter adapter;
-    RecyclerView.LayoutManager layoutManager;
-    SwipeRefreshLayout srl;
+    private RecyclerView recyclerView;
+    private TwitterNotFollowingAdapter adapter;
+    private RecyclerView.LayoutManager layoutManager;
+    private SwipeRefreshLayout srl;
 
     public static class TwitterNotFollowingAdapter extends RecyclerView.Adapter<TwitterNotFollowingAdapter.ViewHolder> {
         public final List<TwitterUser> users;
@@ -112,11 +112,10 @@ public class TwitterNotFollowing extends Fragment {
             // create a new view
             View v = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.notfollowing_card, parent, false);
-            ViewHolder vh = new ViewHolder(v);
-            return vh;
+            return new ViewHolder(v);
         }
 
-        protected static class UnFollowTask extends AsyncTask<String, Void, Void> {
+        class UnFollowTask extends AsyncTask<String, Void, Void> {
             private List<TwitterUser> users;
             public UnFollowTask() { }
 
@@ -161,7 +160,7 @@ public class TwitterNotFollowing extends Fragment {
             }
         }
 
-        protected class SafelistTask extends AsyncTask<String, Void, Void> {
+        class SafelistTask extends AsyncTask<String, Void, Void> {
             private List<TwitterUser> users;
 
             public SafelistTask() { }
@@ -241,7 +240,7 @@ public class TwitterNotFollowing extends Fragment {
         return v;
     }
 
-    protected class GetNotFollowingTask extends AsyncTask<Void, Void, Void> {
+    class GetNotFollowingTask extends AsyncTask<Void, Void, Void> {
         private List<TwitterUser> users;
 
         public GetNotFollowingTask() { }

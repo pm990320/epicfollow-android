@@ -24,7 +24,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class TwitterDetails extends Fragment {
-    public static final String LOG_TAG = TwitterDetails.class.getSimpleName();
+    private static final String LOG_TAG = TwitterDetails.class.getSimpleName();
 
     @Nullable
     @Override
@@ -49,23 +49,23 @@ public class TwitterDetails extends Fragment {
         return v;
     }
 
-    protected void refresh(Runnable runafter) {
+    private void refresh(Runnable runafter) {
         new GetUserDetailsTask().execute();
         if (runafter != null) {
             runafter.run();
         }
     }
-    protected void refresh() { refresh(null); }
+    private void refresh() { refresh(null); }
 
 
     private TwitterCurrentUser currentUser;
 
 
-    Button featureButton;
-    TextView featureText;
-    TextView creditsText;
+    private Button featureButton;
+    private TextView featureText;
+    private TextView creditsText;
 
-    public void setTwitterUser(TwitterCurrentUser user) {
+    private void setTwitterUser(TwitterCurrentUser user) {
         View v = getView();
         currentUser = user;
 
@@ -119,7 +119,7 @@ public class TwitterDetails extends Fragment {
         }
     }
 
-    protected class GetUserDetailsTask extends AsyncTask<Void, Void, Void> {
+    class GetUserDetailsTask extends AsyncTask<Void, Void, Void> {
         public GetUserDetailsTask() { }
 
         private Runnable runafter;
@@ -175,7 +175,7 @@ public class TwitterDetails extends Fragment {
         }
     }
 
-    protected class FeatureTask extends AsyncTask<Void, Void, Void> {
+    class FeatureTask extends AsyncTask<Void, Void, Void> {
         public FeatureTask() { }
 
         private Runnable runafter;

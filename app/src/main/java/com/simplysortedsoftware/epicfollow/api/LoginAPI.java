@@ -7,7 +7,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class LoginAPI {
-    private static String LOG_TAG = LoginAPI.class.getSimpleName();
+    private static final String LOG_TAG = LoginAPI.class.getSimpleName();
 
     public static String getRedirect(String body) {
         if (body == null) {
@@ -33,8 +33,7 @@ public class LoginAPI {
             if (connection.getResponseCode() != 302) {
                 return null;
             } else {
-                String location = connection.getHeaderField("Location");
-                return location;
+                return connection.getHeaderField("Location");
             }
         } catch (IOException e) {
             Log.e(LOG_TAG, "Error completing request.", e);

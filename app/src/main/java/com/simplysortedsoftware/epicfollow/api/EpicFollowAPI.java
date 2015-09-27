@@ -15,7 +15,7 @@ import java.net.URL;
 import java.util.Iterator;
 
 public class EpicFollowAPI {
-    public static final String LOG_TAG = EpicFollowAPI.class.getSimpleName();
+    private static final String LOG_TAG = EpicFollowAPI.class.getSimpleName();
     public static final String BASE_URL = "https://epicfollow.herokuapp.com";
 
     public static final int TWITTER_FEATURE_CREDIT_COST = 25;
