@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.simplysortedsoftware.epicfollow.MainActivity;
 import com.simplysortedsoftware.epicfollow.R;
@@ -91,9 +92,20 @@ public class TwitterFeatured extends Fragment {
             } else {
                 holder.followButton.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(View v) {
+                    public void onClick(final View v) {
                         holder.followButton.setVisibility(View.INVISIBLE);
-                        new FollowTask().execute(user.getUser_id());
+                        new FollowTask(){
+                            @Override
+                            protected void onPostExecute(String message) {
+                                if (!success) {
+                                    Toast.makeText(v.getContext(), message, Toast.LENGTH_LONG).show();
+                                    if (message.contains("limit")) {
+                                        holder.followButton.setEnabled(false);
+                                        holder.followButton.setText("Limit reached");
+                                    }
+                                }
+                            }
+                        }.execute(user.getUser_id());
                     }
                 });
             }
@@ -107,28 +119,15 @@ public class TwitterFeatured extends Fragment {
             return new ViewHolder(v);
         }
 
-        class FollowTask extends AsyncTask<String, Void, Void> {
+        class FollowTask extends AsyncTask<String, Void, String> {
             private List<TwitterUser> users;
 
             public FollowTask() { }
 
-            private Runnable runafter;
-            public FollowTask(Runnable runafter) {
-                this.runafter = runafter;
-            }
-
             public boolean success = false;
 
             @Override
-            protected void onPostExecute(Void aVoid) {
-                super.onPostExecute(aVoid);
-                if (runafter != null) {
-                    runafter.run();
-                }
-            }
-
-            @Override
-            protected Void doInBackground(String... params) {
+            protected String doInBackground(String... params) {
                 JSONObject data = new JSONObject();
                 try {
                     data.put("action", "featured");
@@ -147,10 +146,11 @@ public class TwitterFeatured extends Fragment {
                     } else {
                         success = true;
                     }
+                    return obj.getString("message");
                 } catch (JSONException e) {
                     Log.e(LOG_TAG, "JSON parsing exception", e);
+                    return null;
                 }
-                return null;
             }
         }
     }

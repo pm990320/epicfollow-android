@@ -15,9 +15,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.simplysortedsoftware.epicfollow.R;
 import com.simplysortedsoftware.epicfollow.api.EpicFollowAPI;
+import com.simplysortedsoftware.epicfollow.twitter.models.TwitterNotFollowingUser;
 import com.simplysortedsoftware.epicfollow.twitter.models.TwitterUser;
 import com.squareup.picasso.Picasso;
 
@@ -36,10 +38,10 @@ public class TwitterNotFollowing extends Fragment {
     private SwipeRefreshLayout srl;
 
     public static class TwitterNotFollowingAdapter extends RecyclerView.Adapter<TwitterNotFollowingAdapter.ViewHolder> {
-        public final List<TwitterUser> users;
+        public final List<TwitterNotFollowingUser> users;
         private Context context;
 
-        public TwitterNotFollowingAdapter(Context context, List<TwitterUser> users) {
+        public TwitterNotFollowingAdapter(Context context, List<TwitterNotFollowingUser> users) {
             this.users = users;
             this.context = context;
         }
@@ -67,23 +69,45 @@ public class TwitterNotFollowing extends Fragment {
 
                 unfollowButton.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(View v) {
-                        safelistButton.setVisibility(View.INVISIBLE);
-                        unfollowButton.setEnabled(false);
-                        unfollowButton.setText("Unfollowed");
-                        new UnFollowTask().execute(users.get(getAdapterPosition()).getUser_id());
+                    public void onClick(final View view) {
+                        setUnfollowed(true);
+                        new UnFollowTask(){
+                            @Override
+                            protected void onPostExecute(String message) {
+                                if (!success){
+                                    Toast.makeText(view.getContext(), message, Toast.LENGTH_LONG).show();
+                                    if (message.contains("unfollow users you followed who were featured")) {
+                                        unfollowButton.setText("Cannot Unfollow");
+                                    } else if (message.toLowerCase().contains("max limit")) {
+                                        setUnfollowed(false);
+                                        unfollowButton.setEnabled(false);
+                                        unfollowButton.setText("Unfollow limit reached");
+                                    }
+                                }
+                            }
+                        }.execute(users.get(getAdapterPosition()).getUser_id());
                     }
                 });
 
                 safelistButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        unfollowButton.setVisibility(View.INVISIBLE);
-                        safelistButton.setEnabled(false);
-                        safelistButton.setText("Safelisted");
+                        setSafelisted();
                         new SafelistTask().execute(users.get(getAdapterPosition()).getUser_id());
                     }
                 });
+            }
+
+            void setSafelisted() {
+                unfollowButton.setVisibility(View.INVISIBLE);
+                safelistButton.setEnabled(false);
+                safelistButton.setText("Safelisted");
+            }
+
+            void setUnfollowed(boolean b) {
+                safelistButton.setVisibility(b ? View.INVISIBLE : View.VISIBLE);
+                unfollowButton.setEnabled(!b);
+                unfollowButton.setText(b ? "Unfollowed" : "Unfollow");
             }
         }
 
@@ -94,7 +118,7 @@ public class TwitterNotFollowing extends Fragment {
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            TwitterUser user = users.get(position);
+            TwitterNotFollowingUser user = users.get(position);
 
             Picasso.with(context)
                     //.placeholder()
@@ -105,6 +129,10 @@ public class TwitterNotFollowing extends Fragment {
             holder.name.setText(user.getName());
             holder.followersCount.setText(Integer.toString(user.getFollowersCount()) + " followers");
             holder.followingCount.setText(Integer.toString(user.getFollowingCount()) + " following");
+
+            if (user.isSafelisted()) {
+                holder.setSafelisted();
+            }
         }
 
         @Override
@@ -115,27 +143,14 @@ public class TwitterNotFollowing extends Fragment {
             return new ViewHolder(v);
         }
 
-        class UnFollowTask extends AsyncTask<String, Void, Void> {
+        class UnFollowTask extends AsyncTask<String, Void, String> {
             private List<TwitterUser> users;
             public UnFollowTask() { }
-
-            private Runnable runafter;
-            public UnFollowTask(Runnable runafter) {
-                this.runafter = runafter;
-            }
 
             public boolean success = false;
 
             @Override
-            protected void onPostExecute(Void aVoid) {
-                super.onPostExecute(aVoid);
-                if (runafter != null) {
-                    runafter.run();
-                }
-            }
-
-            @Override
-            protected Void doInBackground(String... params) {
+            protected String doInBackground(String... params) {
                 JSONObject data = new JSONObject();
                 try {
                     data.put("user_id", params[0]);
@@ -153,10 +168,11 @@ public class TwitterNotFollowing extends Fragment {
                         Log.i(LOG_TAG, "JSON response: " + obj);
                         success = true;
                     }
+                    return obj.getString("message");
                 } catch (JSONException e) {
                     Log.e(LOG_TAG, "JSON parsing exception", e);
+                    return null;
                 }
-                return null;
             }
         }
 
@@ -218,7 +234,7 @@ public class TwitterNotFollowing extends Fragment {
         layoutManager = new LinearLayoutManager(this.getContext());
         recyclerView.setLayoutManager(layoutManager);
 
-        adapter = new TwitterNotFollowingAdapter(this.getContext(), new ArrayList<TwitterUser>());
+        adapter = new TwitterNotFollowingAdapter(this.getContext(), new ArrayList<TwitterNotFollowingUser>());
         recyclerView.setAdapter(adapter);
 
         GetNotFollowingTask t = new GetNotFollowingTask();
@@ -241,7 +257,7 @@ public class TwitterNotFollowing extends Fragment {
     }
 
     class GetNotFollowingTask extends AsyncTask<Void, Void, Void> {
-        private List<TwitterUser> users;
+        private List<TwitterNotFollowingUser> users;
 
         public GetNotFollowingTask() { }
 
@@ -271,14 +287,17 @@ public class TwitterNotFollowing extends Fragment {
                 JSONArray jsonarr = jsonobj.getJSONArray("users");
                 for (int i = 0; i < jsonarr.length(); i++) {
                     JSONObject userobj = jsonarr.getJSONObject(i);
-                    TwitterUser user = new TwitterUser(
+                    TwitterNotFollowingUser user = new TwitterNotFollowingUser(
                             userobj.getString("user_id"),
                             userobj.getString("screen_name"),
                             userobj.getString("profile_image_url"),
                             userobj.getString("name"),
                             userobj.getString("description"),
                             userobj.getInt("followers_count"),
-                            userobj.getInt("friends_count")
+                            userobj.getInt("friends_count"),
+                            userobj.getBoolean("following"),
+                            userobj.getBoolean("follow_request_sent"),
+                            userobj.getBoolean("safelisted")
                     );
                     users.add(user);
                 }

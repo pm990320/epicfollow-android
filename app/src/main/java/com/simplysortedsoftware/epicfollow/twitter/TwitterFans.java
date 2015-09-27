@@ -15,10 +15,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.simplysortedsoftware.epicfollow.R;
 import com.simplysortedsoftware.epicfollow.api.EpicFollowAPI;
-import com.simplysortedsoftware.epicfollow.twitter.models.TwitterUser;
+import com.simplysortedsoftware.epicfollow.twitter.models.UserContextTwitterUser;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -36,10 +37,10 @@ public class TwitterFans extends Fragment {
     private SwipeRefreshLayout srl;
 
     public static class TwitterFansAdapter extends RecyclerView.Adapter<TwitterFansAdapter.ViewHolder> {
-        public final List<TwitterUser> users;
+        public final List<UserContextTwitterUser> users;
         private Context context;
 
-        public TwitterFansAdapter(Context context, List<TwitterUser> users) {
+        public TwitterFansAdapter(Context context, List<UserContextTwitterUser> users) {
             this.users = users;
             this.context = context;
         }
@@ -72,7 +73,7 @@ public class TwitterFans extends Fragment {
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
-            final TwitterUser user = users.get(position);
+            final UserContextTwitterUser user = users.get(position);
 
             Picasso.with(context)
                     //.placeholder()
@@ -84,17 +85,32 @@ public class TwitterFans extends Fragment {
             holder.followersCount.setText(Integer.toString(user.getFollowersCount()) + " followers");
             holder.followingCount.setText(Integer.toString(user.getFollowingCount()) + " following");
 
-            holder.followButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    new FollowTask(new Runnable() {
-                        @Override
-                        public void run() {
-                            holder.followButton.setVisibility(View.INVISIBLE);
-                        }
-                    }).execute(user.getUser_id());
-                }
-            });
+            if (user.isFollowRequestSent()) {
+                holder.followButton.setEnabled(false);
+                holder.followButton.setText("Follow Request Sent");
+                holder.followButton.setBackgroundResource(R.color.md_blue_grey_500);
+            } else {
+                holder.followButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(final View v) {
+                        new FollowTask() {
+                            @Override
+                            protected void onPostExecute(String message) {
+                                if (!success) {
+                                    Toast.makeText(v.getContext(), message, Toast.LENGTH_LONG).show();
+                                    if (message.contains("limit")) {
+                                        holder.followButton.setEnabled(false);
+                                        holder.followButton.setText("Limit reached");
+                                        holder.followButton.setBackgroundResource(R.color.md_grey_600);
+                                    }
+                                } else {
+                                    holder.followButton.setVisibility(View.INVISIBLE);
+                                }
+                            }
+                        }.execute(user.getUser_id());
+                    }
+                });
+            }
         }
 
         @Override
@@ -106,31 +122,17 @@ public class TwitterFans extends Fragment {
             return new ViewHolder(v);
         }
 
-        class FollowTask extends AsyncTask<String, Void, Void> {
-            private List<TwitterUser> users;
-
+        class FollowTask extends AsyncTask<String, Void, String> {
             public FollowTask() { }
-
-            private Runnable runafter;
-            public FollowTask(Runnable runafter) {
-                this.runafter = runafter;
-            }
 
             public boolean success = false;
 
             @Override
-            protected void onPostExecute(Void aVoid) {
-                super.onPostExecute(aVoid);
-                if (runafter != null) {
-                    runafter.run();
-                }
-            }
-
-            @Override
-            protected Void doInBackground(String... params) {
+            protected String doInBackground(String... params) {
                 JSONObject data = new JSONObject();
                 try {
                     data.put("user_id", params[0]);
+                    data.put("action", "fans");
                 } catch (JSONException e) {
                     Log.e(LOG_TAG, "Really unusual JSON exception :O", e);
                     return null;
@@ -144,10 +146,11 @@ public class TwitterFans extends Fragment {
                     } else {
                         success = true;
                     }
+                    return obj.getString("message");
                 } catch (JSONException e) {
                     Log.e(LOG_TAG, "JSON parsing exception", e);
+                    return null;
                 }
-                return null;
             }
         }
     }
@@ -163,7 +166,7 @@ public class TwitterFans extends Fragment {
         layoutManager = new LinearLayoutManager(this.getContext());
         recyclerView.setLayoutManager(layoutManager);
 
-        adapter = new TwitterFansAdapter(this.getContext(), new ArrayList<TwitterUser>());
+        adapter = new TwitterFansAdapter(this.getContext(), new ArrayList<UserContextTwitterUser>());
         recyclerView.setAdapter(adapter);
 
         GetFansTask t = new GetFansTask();
@@ -186,7 +189,7 @@ public class TwitterFans extends Fragment {
     }
 
     class GetFansTask extends AsyncTask<Void, Void, Void> {
-        private List<TwitterUser> users;
+        private List<UserContextTwitterUser> users;
 
         public GetFansTask() { }
 
@@ -215,14 +218,16 @@ public class TwitterFans extends Fragment {
                 JSONArray jsonarr = jsonobj.getJSONArray("users");
                 for (int i = 0; i < jsonarr.length(); i++) {
                     JSONObject userobj = jsonarr.getJSONObject(i);
-                    TwitterUser user = new TwitterUser(
+                    UserContextTwitterUser user = new UserContextTwitterUser(
                             userobj.getString("user_id"),
                             userobj.getString("screen_name"),
                             userobj.getString("profile_image_url"),
                             userobj.getString("name"),
                             userobj.getString("description"),
                             userobj.getInt("followers_count"),
-                            userobj.getInt("friends_count")
+                            userobj.getInt("friends_count"),
+                            userobj.getBoolean("following"),
+                            userobj.getBoolean("follow_request_sent")
                     );
                     users.add(user);
                 }
