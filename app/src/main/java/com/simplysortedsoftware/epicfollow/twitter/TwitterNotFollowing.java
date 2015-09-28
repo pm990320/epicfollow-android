@@ -67,35 +67,39 @@ public class TwitterNotFollowing extends Fragment {
                 unfollowButton = (Button) v.findViewById(R.id.notfollowing_unfollow_button);
                 safelistButton = (Button) v.findViewById(R.id.notfollowing_safelist_button);
 
-                unfollowButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(final View view) {
-                        setUnfollowed(true);
-                        new UnFollowTask(){
-                            @Override
-                            protected void onPostExecute(String message) {
-                                if (!success){
-                                    Toast.makeText(view.getContext(), message, Toast.LENGTH_LONG).show();
-                                    if (message.contains("unfollow users you followed who were featured")) {
-                                        unfollowButton.setText("Cannot Unfollow");
-                                    } else if (message.toLowerCase().contains("max limit")) {
-                                        setUnfollowed(false);
-                                        unfollowButton.setEnabled(false);
-                                        unfollowButton.setText("Unfollow limit reached");
+                if (users.get(getAdapterPosition()) != null && users.get(getAdapterPosition()).getUser_id() != null) {
+                    unfollowButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(final View view) {
+                            setUnfollowed(true);
+                            new UnFollowTask(){
+                                @Override
+                                protected void onPostExecute(String message) {
+                                    if (!success){
+                                        Toast.makeText(view.getContext(), message, Toast.LENGTH_LONG).show();
+                                        if (message.contains("unfollow users you followed who were featured")) {
+                                            unfollowButton.setText("Cannot Unfollow");
+                                        } else if (message.toLowerCase().contains("max limit")) {
+                                            setUnfollowed(false);
+                                            unfollowButton.setEnabled(false);
+                                            unfollowButton.setText("Unfollow limit reached");
+                                        }
                                     }
                                 }
-                            }
-                        }.execute(users.get(getAdapterPosition()).getUser_id());
-                    }
-                });
+                            }.execute(users.get(getAdapterPosition()).getUser_id());
+                        }
+                    });
 
-                safelistButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        setSafelisted();
-                        new SafelistTask().execute(users.get(getAdapterPosition()).getUser_id());
-                    }
-                });
+                    safelistButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            setSafelisted();
+                            new SafelistTask().execute(users.get(getAdapterPosition()).getUser_id());
+                        }
+                    });
+                } else {
+                    Log.d(LOG_TAG, "Data error, user or user_id null");
+                }
             }
 
             void setSafelisted() {
@@ -118,20 +122,24 @@ public class TwitterNotFollowing extends Fragment {
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            TwitterNotFollowingUser user = users.get(position);
+            try {
+                TwitterNotFollowingUser user = users.get(position);
 
-            Picasso.with(context)
-                    //.placeholder()
-                    .load(user.getProfile_image_link()).into(holder.profileImg);
+                Picasso.with(context)
+                        //.placeholder()
+                        .load(user.getProfile_image_link()).into(holder.profileImg);
 
-            holder.screenName.setText("@" + user.getScreen_name());
-            holder.description.setText(user.getDescription());
-            holder.name.setText(user.getName());
-            holder.followersCount.setText(Integer.toString(user.getFollowersCount()) + " followers");
-            holder.followingCount.setText(Integer.toString(user.getFollowingCount()) + " following");
+                holder.screenName.setText("@" + user.getScreen_name());
+                holder.description.setText(user.getDescription());
+                holder.name.setText(user.getName());
+                holder.followersCount.setText(Integer.toString(user.getFollowersCount()) + " followers");
+                holder.followingCount.setText(Integer.toString(user.getFollowingCount()) + " following");
 
-            if (user.isSafelisted()) {
-                holder.setSafelisted();
+                if (user.isSafelisted()) {
+                    holder.setSafelisted();
+                }
+            } catch (NullPointerException e) {
+                Log.d(LOG_TAG, "Data error, null pointer exception", e);
             }
         }
 

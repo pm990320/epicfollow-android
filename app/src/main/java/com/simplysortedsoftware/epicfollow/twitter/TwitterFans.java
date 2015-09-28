@@ -73,44 +73,48 @@ public class TwitterFans extends Fragment {
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
-            final UserContextTwitterUser user = users.get(position);
+            try {
+                final UserContextTwitterUser user = users.get(position);
 
-            Picasso.with(context)
-                    //.placeholder()
-                    .load(user.getProfile_image_link()).into(holder.profileImg);
+                Picasso.with(context)
+                        //.placeholder()
+                        .load(user.getProfile_image_link()).into(holder.profileImg);
 
-            holder.screenName.setText("@" + user.getScreen_name());
-            holder.description.setText(user.getDescription());
-            holder.name.setText(user.getName());
-            holder.followersCount.setText(Integer.toString(user.getFollowersCount()) + " followers");
-            holder.followingCount.setText(Integer.toString(user.getFollowingCount()) + " following");
+                holder.screenName.setText("@" + user.getScreen_name());
+                holder.description.setText(user.getDescription());
+                holder.name.setText(user.getName());
+                holder.followersCount.setText(Integer.toString(user.getFollowersCount()) + " followers");
+                holder.followingCount.setText(Integer.toString(user.getFollowingCount()) + " following");
 
-            if (user.isFollowRequestSent()) {
-                holder.followButton.setEnabled(false);
-                holder.followButton.setText("Follow Request Sent");
-                holder.followButton.setBackgroundResource(R.color.md_blue_grey_500);
-            } else {
-                holder.followButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(final View v) {
-                        new FollowTask() {
-                            @Override
-                            protected void onPostExecute(String message) {
-                                if (!success) {
-                                    Toast.makeText(v.getContext(), message, Toast.LENGTH_LONG).show();
-                                    if (message.contains("limit")) {
+                if (user.isFollowRequestSent()) {
+                    holder.followButton.setEnabled(false);
+                    holder.followButton.setText("Follow Request Sent");
+                    holder.followButton.setBackgroundResource(R.color.md_blue_grey_500);
+                } else {
+                    holder.followButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(final View v) {
+                            new FollowTask() {
+                                @Override
+                                protected void onPostExecute(String message) {
+                                    if (!success) {
+                                        Toast.makeText(v.getContext(), message, Toast.LENGTH_LONG).show();
+                                        if (message.contains("limit")) {
+                                            holder.followButton.setEnabled(false);
+                                            holder.followButton.setText("Limit reached");
+                                            holder.followButton.setBackgroundResource(R.color.md_grey_600);
+                                        }
+                                    } else {
                                         holder.followButton.setEnabled(false);
-                                        holder.followButton.setText("Limit reached");
-                                        holder.followButton.setBackgroundResource(R.color.md_grey_600);
+                                        holder.followButton.setText("Followed");
                                     }
-                                } else {
-                                    holder.followButton.setEnabled(false);
-                                    holder.followButton.setText("Followed");
                                 }
-                            }
-                        }.execute(user.getUser_id());
-                    }
-                });
+                            }.execute(user.getUser_id());
+                        }
+                    });
+                }
+            } catch (NullPointerException e) {
+                Log.d(LOG_TAG, "Data error, null pointer exception", e);
             }
         }
 

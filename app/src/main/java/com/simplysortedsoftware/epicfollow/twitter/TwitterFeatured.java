@@ -75,41 +75,49 @@ public class TwitterFeatured extends Fragment {
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
             final TwitterUser user = users.get(position);
+            if (user == null) {
+                return; // error user
+            }
 
-            Picasso.with(context)
-                    //.placeholder()
-                    .load(user.getProfile_image_link()).into(holder.profileImg);
+            try {
+                Picasso.with(context)
+                        //.placeholder() // TODO placeholder image
+                        .load(user.getProfile_image_link()).into(holder.profileImg);
 
-            holder.screenName.setText("@" + user.getScreen_name());
-            holder.description.setText(user.getDescription());
-            holder.name.setText(user.getName());
-            holder.followersCount.setText(Integer.toString(user.getFollowersCount()) + " followers");
-            holder.followingCount.setText(Integer.toString(user.getFollowingCount()) + " following");
+                holder.screenName.setText("@" + user.getScreen_name());
+                holder.description.setText(user.getDescription());
+                holder.name.setText(user.getName());
+                holder.followersCount.setText(Integer.toString(user.getFollowersCount()) + " followers");
+                holder.followingCount.setText(Integer.toString(user.getFollowingCount()) + " following");
 
-            // check if self in featured users
-            if (user.getUser_id().equals(MainActivity.session.getLoggedInUserID())) {
-                holder.followButton.setVisibility(View.INVISIBLE);
-            } else {
-                holder.followButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(final View v) {
-                        holder.followButton.setEnabled(false);
-                        holder.followButton.setText("Followed");
-                        new FollowTask(){
-                            @Override
-                            protected void onPostExecute(String message) {
-                                if (!success) {
-                                    Toast.makeText(v.getContext(), message, Toast.LENGTH_LONG).show();
-                                    if (message.contains("limit")) {
-                                        holder.followButton.setEnabled(false);
-                                        holder.followButton.setText("Limit reached");
+                // check if self in featured users
+                if (user.getUser_id().equals(MainActivity.session.getLoggedInUserID())) {
+                    holder.followButton.setVisibility(View.INVISIBLE);
+                } else {
+                    holder.followButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(final View v) {
+                            holder.followButton.setEnabled(false);
+                            holder.followButton.setText("Followed");
+                            new FollowTask(){
+                                @Override
+                                protected void onPostExecute(String message) {
+                                    if (!success) {
+                                        Toast.makeText(v.getContext(), message, Toast.LENGTH_LONG).show();
+                                        if (message.contains("limit")) {
+                                            holder.followButton.setEnabled(false);
+                                            holder.followButton.setText("Limit reached");
+                                        }
                                     }
                                 }
-                            }
-                        }.execute(user.getUser_id());
-                    }
-                });
+                            }.execute(user.getUser_id());
+                        }
+                    });
+                }
+            } catch (NullPointerException e) {
+                Log.e(LOG_TAG, "Error in data, null pointer exception", e);
             }
+
         }
 
         @Override

@@ -28,6 +28,14 @@
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true" />
 
+        <ProgressBar
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/progressBar"
+            android:indeterminate="true"
+            android:indeterminateBehavior="cycle" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

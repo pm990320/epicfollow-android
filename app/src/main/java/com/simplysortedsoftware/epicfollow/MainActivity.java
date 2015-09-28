@@ -10,6 +10,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 
 import com.simplysortedsoftware.epicfollow.api.EpicFollowAPI;
 import com.simplysortedsoftware.epicfollow.api.LoginAPI;
@@ -29,6 +30,7 @@ public class MainActivity extends BaseActivity {
 
     private Button addTwitterAccountButton;
     private LinearLayout buttonsView;
+    private ProgressBar progress;
 
     private TwitterUsersSession twitterUsersSession;
 
@@ -38,6 +40,7 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
 
         buttonsView = (LinearLayout)findViewById(R.id.buttonsView);
+        progress = (ProgressBar)findViewById(R.id.progressBar);
         addTwitterAccountButton = (Button)findViewById(R.id.addTwitterAccountButton);
         addTwitterAccountButton.setEnabled(true);
         addTwitterAccountButton.setText(R.string.add_twitter_account_button_text);
@@ -60,6 +63,7 @@ public class MainActivity extends BaseActivity {
     }
 
     protected void syncLoginStatus() {
+        progress.setVisibility(View.VISIBLE);
         new GetLoggedInUsersTask() {
             @Override
             protected void onPostExecute(TwitterUsersSession twitterUsersSession) {
@@ -82,13 +86,15 @@ public class MainActivity extends BaseActivity {
                     });
                     buttonsView.addView(userButton);
                 }
+                progress.setVisibility(View.GONE);
             }
         }.execute();
     }
 
     protected enum RedirectType {
         TO_LOGIN_SCREEN,
-        STRAIGHT_TO_TWITTER
+        STRAIGHT_TO_TWITTER,
+        BACK_HOME
     }
 
     class LoginAccountTask extends AsyncTask<Void, Void, Void> {
@@ -106,6 +112,11 @@ public class MainActivity extends BaseActivity {
         protected Void doInBackground(Void... params) {
             String redir = LoginAPI.getRedirect(qsparams);
             Log.v(LOG_TAG, "Redirect location: " + redir);
+
+            if (redir == null) {
+                redirectType = RedirectType.BACK_HOME;
+            }
+
             if (redir.equals("/#/twitter")) {
                 redirectType = RedirectType.STRAIGHT_TO_TWITTER;
                 Log.v(LOG_TAG, "Redirecting straight to twitter...");
@@ -125,6 +136,9 @@ public class MainActivity extends BaseActivity {
                     case STRAIGHT_TO_TWITTER:
                         i = new Intent(MainActivity.this, TwitterActivity.class);
                         startActivity(i);
+                        break;
+                    case BACK_HOME:
+                        // do nothing
                         break;
                 }
             }
