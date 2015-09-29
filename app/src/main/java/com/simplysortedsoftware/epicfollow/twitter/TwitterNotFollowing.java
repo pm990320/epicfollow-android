@@ -58,24 +58,25 @@ public class TwitterNotFollowing extends Fragment {
 
             public ViewHolder(View v) {
                 super(v);
-                screenName = (TextView) v.findViewById(R.id.notfollowing_screen_name_text);
-                description = (TextView) v.findViewById(R.id.notfollowing_description_text);
-                name = (TextView) v.findViewById(R.id.notfollowing_name_text);
-                profileImg = (ImageView) v.findViewById(R.id.notfollowing_profile_image);
-                followersCount = (TextView) v.findViewById(R.id.notfollowing_followers);
-                followingCount = (TextView) v.findViewById(R.id.notfollowing_following);
-                unfollowButton = (Button) v.findViewById(R.id.notfollowing_unfollow_button);
-                safelistButton = (Button) v.findViewById(R.id.notfollowing_safelist_button);
 
-                if (users.get(getAdapterPosition()) != null && users.get(getAdapterPosition()).getUser_id() != null) {
+                try {
+                    screenName = (TextView) v.findViewById(R.id.notfollowing_screen_name_text);
+                    description = (TextView) v.findViewById(R.id.notfollowing_description_text);
+                    name = (TextView) v.findViewById(R.id.notfollowing_name_text);
+                    profileImg = (ImageView) v.findViewById(R.id.notfollowing_profile_image);
+                    followersCount = (TextView) v.findViewById(R.id.notfollowing_followers);
+                    followingCount = (TextView) v.findViewById(R.id.notfollowing_following);
+                    unfollowButton = (Button) v.findViewById(R.id.notfollowing_unfollow_button);
+                    safelistButton = (Button) v.findViewById(R.id.notfollowing_safelist_button);
+
                     unfollowButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(final View view) {
+                            @Override
+                            public void onClick(final View view) {
                             setUnfollowed(true);
-                            new UnFollowTask(){
+                            new UnFollowTask() {
                                 @Override
                                 protected void onPostExecute(String message) {
-                                    if (!success){
+                                    if (!success) {
                                         Toast.makeText(view.getContext(), message, Toast.LENGTH_LONG).show();
                                         if (message.contains("unfollow users you followed who were featured")) {
                                             unfollowButton.setText("Cannot Unfollow");
@@ -97,8 +98,10 @@ public class TwitterNotFollowing extends Fragment {
                             new SafelistTask().execute(users.get(getAdapterPosition()).getUser_id());
                         }
                     });
-                } else {
-                    Log.d(LOG_TAG, "Data error, user or user_id null");
+                } catch (NullPointerException e) {
+                    Log.d(LOG_TAG, "Data error, user or user_id null", e);
+                } catch (Exception e) {
+                    Log.e(LOG_TAG, "Other error", e);
                 }
             }
 

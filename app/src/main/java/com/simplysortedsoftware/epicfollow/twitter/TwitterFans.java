@@ -115,6 +115,8 @@ public class TwitterFans extends Fragment {
                 }
             } catch (NullPointerException e) {
                 Log.d(LOG_TAG, "Data error, null pointer exception", e);
+            } catch (Exception e) {
+                Log.e(LOG_TAG,  "Other error", e);
             }
         }
 

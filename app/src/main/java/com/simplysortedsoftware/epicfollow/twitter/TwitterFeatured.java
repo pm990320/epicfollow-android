@@ -116,8 +116,9 @@ public class TwitterFeatured extends Fragment {
                 }
             } catch (NullPointerException e) {
                 Log.e(LOG_TAG, "Error in data, null pointer exception", e);
+            } catch (Exception e) {
+                Log.e(LOG_TAG, "Other error", e);
             }
-
         }
 
         @Override
