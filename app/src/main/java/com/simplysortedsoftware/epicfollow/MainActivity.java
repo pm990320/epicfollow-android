@@ -163,19 +163,23 @@ public class MainActivity extends BaseActivity {
 
                 List<TwitterCurrentUser> users = new ArrayList<>();
                 for (int i = 0; i < accounts.length(); i++) {
-                    JSONObject details = accounts.getJSONObject(i).getJSONObject("details");
-                    TwitterCurrentUser twitterUser = new TwitterCurrentUser(
-                            accounts.getJSONObject(i).getString("user_id"),
-                            details.getString("screen_name"),
-                            details.getString("profile_image_url"),
-                            details.getString("name"),
-                            details.getString("description"),
-                            details.getInt("followers_count"),
-                            details.getInt("friends_count"),
-                            accounts.getJSONObject(i).getInt("credits")
-                    );
-                    Log.i(LOG_TAG, "twitterUser: " + twitterUser.toString());
-                    users.add(twitterUser);
+                    try {
+                        JSONObject details = accounts.getJSONObject(i).getJSONObject("details");
+                        TwitterCurrentUser twitterUser = new TwitterCurrentUser(
+                                accounts.getJSONObject(i).getString("user_id"),
+                                details.getString("screen_name"),
+                                details.getString("profile_image_url"),
+                                details.getString("name"),
+                                details.getString("description"),
+                                details.getInt("followers_count"),
+                                details.getInt("friends_count"),
+                                accounts.getJSONObject(i).getInt("credits")
+                        );
+                        Log.i(LOG_TAG, "twitterUser: " + twitterUser.toString());
+                        users.add(twitterUser);
+                    } catch (JSONException e) {
+                        Log.e(LOG_TAG, "Error in user JSON: " + accounts.getJSONObject(i).toString());
+                    }
                 }
                 session = new TwitterUsersSession(users, logged_in);
                 return session;
