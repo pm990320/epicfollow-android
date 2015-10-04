@@ -76,7 +76,7 @@ public class EpicFollowAPI {
                 buffer.append(line);
             }
             return buffer.toString();
-        } catch (IOException e) {
+        } catch (Exception e) {
             Log.e(LOG_TAG, "Error completing request.", e);
             return null;
         } finally {
@@ -134,7 +134,7 @@ public class EpicFollowAPI {
                 buffer.append(line);
             }
             return buffer.toString();
-        } catch (IOException e) {
+        } catch (Exception e) {
             Log.e(LOG_TAG, "Error completing request.", e);
             return null;
         } finally {
