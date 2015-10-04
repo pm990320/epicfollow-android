@@ -99,7 +99,7 @@ public class TwitterFans extends Fragment {
                                 protected void onPostExecute(String message) {
                                     if (!success) {
                                         Toast.makeText(v.getContext(), message, Toast.LENGTH_LONG).show();
-                                        if (message.contains("limit")) {
+                                        if (message != null && message.contains("limit")) {
                                             holder.followButton.setEnabled(false);
                                             holder.followButton.setText("Limit reached");
                                             holder.followButton.setBackgroundResource(R.color.md_grey_600);
