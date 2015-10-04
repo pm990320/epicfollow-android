@@ -94,18 +94,20 @@ public class TwitterFans extends Fragment {
                     holder.followButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(final View v) {
+                            holder.followButton.setEnabled(false);
                             new FollowTask() {
                                 @Override
                                 protected void onPostExecute(String message) {
                                     if (!success) {
                                         Toast.makeText(v.getContext(), message, Toast.LENGTH_LONG).show();
-                                        if (message != null && message.contains("limit")) {
-                                            holder.followButton.setEnabled(false);
+                                        if (message != null && message.toLowerCase().contains("limit")) {
+
                                             holder.followButton.setText("Limit reached");
                                             holder.followButton.setBackgroundResource(R.color.md_grey_600);
+                                        } else if (message != null && message.toLowerCase().contains("already")) {
+                                            holder.followButton.setVisibility(View.INVISIBLE);
                                         }
                                     } else {
-                                        holder.followButton.setEnabled(false);
                                         holder.followButton.setText("Followed");
                                     }
                                 }
