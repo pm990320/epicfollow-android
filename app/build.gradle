@@ -25,7 +25,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             debuggable false
             signingConfig signingConfigs.config
-            zipAlignEnabled false
+            zipAlignEnabled true
         }
         debug {
             debuggable true
