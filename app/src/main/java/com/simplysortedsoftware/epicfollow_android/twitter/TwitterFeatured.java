@@ -1,4 +1,4 @@
-package com.simplysortedsoftware.epicfollow.twitter;
+package com.simplysortedsoftware.epicfollow_android.twitter;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -17,9 +17,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.simplysortedsoftware.epicfollow.R;
-import com.simplysortedsoftware.epicfollow.api.EpicFollowAPI;
-import com.simplysortedsoftware.epicfollow.twitter.models.UserContextTwitterUser;
+import com.simplysortedsoftware.epicfollow_android.MainActivity;
+import com.simplysortedsoftware.epicfollow_android.R;
+import com.simplysortedsoftware.epicfollow_android.api.EpicFollowAPI;
+import com.simplysortedsoftware.epicfollow_android.twitter.models.TwitterUser;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -29,18 +30,18 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TwitterFans extends Fragment {
-    private static String LOG_TAG = TwitterFans.class.getSimpleName();
+public class TwitterFeatured extends Fragment {
+    private static String LOG_TAG = TwitterFeatured.class.getSimpleName();
     private RecyclerView recyclerView;
-    private TwitterFansAdapter adapter;
+    private TwitterFeaturedAdapter adapter;
     private RecyclerView.LayoutManager layoutManager;
     private SwipeRefreshLayout srl;
 
-    public static class TwitterFansAdapter extends RecyclerView.Adapter<TwitterFansAdapter.ViewHolder> {
-        public final List<UserContextTwitterUser> users;
+    public static class TwitterFeaturedAdapter extends RecyclerView.Adapter<TwitterFeaturedAdapter.ViewHolder> {
+        public final List<TwitterUser> users;
         private Context context;
 
-        public TwitterFansAdapter(Context context, List<UserContextTwitterUser> users) {
+        public TwitterFeaturedAdapter(Context context, List<TwitterUser> users) {
             this.users = users;
             this.context = context;
         }
@@ -56,28 +57,31 @@ public class TwitterFans extends Fragment {
 
             public ViewHolder(View v) {
                 super(v);
-                screenName = (TextView) v.findViewById(R.id.fans_screen_name_text);
-                description = (TextView) v.findViewById(R.id.fans_description_text);
-                name = (TextView) v.findViewById(R.id.fans_name_text);
-                profileImg = (ImageView) v.findViewById(R.id.fans_profile_image);
-                followersCount = (TextView) v.findViewById(R.id.fans_followers);
-                followingCount = (TextView) v.findViewById(R.id.fans_following);
-                followButton = (Button) v.findViewById(R.id.fans_follow_button);
+                screenName = (TextView) v.findViewById(R.id.featured_screen_name_text);
+                description = (TextView) v.findViewById(R.id.featured_description_text);
+                name = (TextView) v.findViewById(R.id.featured_name_text);
+                profileImg = (ImageView) v.findViewById(R.id.featured_profile_image);
+                followersCount = (TextView) v.findViewById(R.id.featured_followers);
+                followingCount = (TextView) v.findViewById(R.id.featured_following);
+                followButton = (Button) v.findViewById(R.id.featured_follow_button);
             }
         }
 
         @Override
         public int getItemCount() {
             return users.size();
-        }
+    }
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
-            try {
-                final UserContextTwitterUser user = users.get(position);
+            final TwitterUser user = users.get(position);
+            if (user == null) {
+                return; // error user
+            }
 
+            try {
                 Picasso.with(context)
-                        //.placeholder()
+                        //.placeholder() // TODO placeholder image
                         .load(user.getProfile_image_link()).into(holder.profileImg);
 
                 holder.screenName.setText("@" + user.getScreen_name());
@@ -86,27 +90,23 @@ public class TwitterFans extends Fragment {
                 holder.followersCount.setText(Integer.toString(user.getFollowersCount()) + " followers");
                 holder.followingCount.setText(Integer.toString(user.getFollowingCount()) + " following");
 
-                if (user.isFollowRequestSent()) {
-                    holder.followButton.setEnabled(false);
-                    holder.followButton.setText("Follow Request Sent");
-                    holder.followButton.setBackgroundResource(R.color.md_blue_grey_500);
+                // check if self in featured users
+                if (user.getUser_id().equals(MainActivity.session.getLoggedInUserID())) {
+                    holder.followButton.setVisibility(View.INVISIBLE);
                 } else {
                     holder.followButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(final View v) {
                             holder.followButton.setEnabled(false);
                             holder.followButton.setText("Followed");
-                            new FollowTask() {
+                            new FollowTask(){
                                 @Override
                                 protected void onPostExecute(String message) {
                                     if (!success) {
                                         Toast.makeText(v.getContext(), message, Toast.LENGTH_LONG).show();
-                                        if (message != null && message.toLowerCase().contains("limit")) {
-
+                                        if (message.contains("limit")) {
+                                            holder.followButton.setEnabled(false);
                                             holder.followButton.setText("Limit reached");
-                                            holder.followButton.setBackgroundResource(R.color.md_grey_600);
-                                        } else if (message != null && message.toLowerCase().contains("already")) {
-                                            holder.followButton.setVisibility(View.INVISIBLE);
                                         }
                                     }
                                 }
@@ -115,9 +115,9 @@ public class TwitterFans extends Fragment {
                     });
                 }
             } catch (NullPointerException e) {
-                Log.d(LOG_TAG, "Data error, null pointer exception", e);
+                Log.e(LOG_TAG, "Error in data, null pointer exception", e);
             } catch (Exception e) {
-                Log.e(LOG_TAG,  "Other error", e);
+                Log.e(LOG_TAG, "Other error", e);
             }
         }
 
@@ -125,12 +125,13 @@ public class TwitterFans extends Fragment {
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             // create a new view
             View v = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.fans_card, parent, false);
-
+                    .inflate(R.layout.featured_card, parent, false);
             return new ViewHolder(v);
         }
 
         class FollowTask extends AsyncTask<String, Void, String> {
+            private List<TwitterUser> users;
+
             public FollowTask() { }
 
             public boolean success = false;
@@ -139,8 +140,8 @@ public class TwitterFans extends Fragment {
             protected String doInBackground(String... params) {
                 JSONObject data = new JSONObject();
                 try {
+                    data.put("action", "featured");
                     data.put("user_id", params[0]);
-                    data.put("action", "fans");
                 } catch (JSONException e) {
                     Log.e(LOG_TAG, "Really unusual JSON exception :O", e);
                     return null;
@@ -149,7 +150,8 @@ public class TwitterFans extends Fragment {
                 String res = EpicFollowAPI.post("/twitter/follow", data);
                 try {
                     JSONObject obj = new JSONObject(res);
-                    if (!obj.getBoolean("success")) {
+                    Log.v(LOG_TAG, "JSON Object: " + obj);
+                    if (obj.has("success") && !obj.getBoolean("success")) {
                         Log.e(LOG_TAG, "Error. Message: " + obj.getString("message"));
                     } else {
                         success = true;
@@ -174,17 +176,17 @@ public class TwitterFans extends Fragment {
         layoutManager = new LinearLayoutManager(this.getContext());
         recyclerView.setLayoutManager(layoutManager);
 
-        adapter = new TwitterFansAdapter(this.getContext(), new ArrayList<UserContextTwitterUser>());
+        adapter = new TwitterFeaturedAdapter(this.getContext(), new ArrayList<TwitterUser>());
         recyclerView.setAdapter(adapter);
 
-        GetFansTask t = new GetFansTask();
+        GetFeaturedTask t = new GetFeaturedTask();
         t.execute();
 
         srl = (SwipeRefreshLayout)v.findViewById(R.id.twitter_featured_refresh_layout);
         srl.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                new GetFansTask(new Runnable(){
+                new GetFeaturedTask(new Runnable(){
                     @Override
                     public void run() {
                         srl.setRefreshing(false);
@@ -196,20 +198,20 @@ public class TwitterFans extends Fragment {
         return v;
     }
 
-    class GetFansTask extends AsyncTask<Void, Void, Void> {
-        private List<UserContextTwitterUser> users;
+    class GetFeaturedTask extends AsyncTask<Void, Void, Void> {
+        private List<TwitterUser> users;
 
-        public GetFansTask() { }
+        public GetFeaturedTask() { }
 
         private Runnable runafter;
-        public GetFansTask(Runnable runafter) {
+        public GetFeaturedTask(Runnable runafter) {
             this.runafter = runafter;
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            adapter = new TwitterFansAdapter(TwitterFans.this.getContext(), users);
+            adapter = new TwitterFeaturedAdapter(TwitterFeatured.this.getContext(), users);
             recyclerView.setAdapter(adapter);
             recyclerView.setItemViewCacheSize(adapter.getItemCount());
             if (runafter != null) {
@@ -219,23 +221,20 @@ public class TwitterFans extends Fragment {
 
         @Override
         protected Void doInBackground(Void... params) {
-            String res = EpicFollowAPI.get("/twitter/followers/fans");
+            String res = EpicFollowAPI.get("/twitter/featured");
             users = new ArrayList<>();
             try {
-                JSONObject jsonobj = new JSONObject(res);
-                JSONArray jsonarr = jsonobj.getJSONArray("users");
+                JSONArray jsonarr = new JSONArray(res);
                 for (int i = 0; i < jsonarr.length(); i++) {
                     JSONObject userobj = jsonarr.getJSONObject(i);
-                    UserContextTwitterUser user = new UserContextTwitterUser(
+                    TwitterUser user = new TwitterUser(
                             userobj.getString("user_id"),
                             userobj.getString("screen_name"),
                             userobj.getString("profile_image_url"),
                             userobj.getString("name"),
                             userobj.getString("description"),
                             userobj.getInt("followers_count"),
-                            userobj.getInt("friends_count"),
-                            userobj.getBoolean("following"),
-                            userobj.getBoolean("follow_request_sent")
+                            userobj.getInt("friends_count")
                     );
                     users.add(user);
                 }

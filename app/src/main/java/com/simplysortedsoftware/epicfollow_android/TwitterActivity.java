@@ -1,4 +1,4 @@
-package com.simplysortedsoftware.epicfollow;
+package com.simplysortedsoftware.epicfollow_android;
 
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -9,10 +9,9 @@ import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.simplysortedsoftware.epicfollow.twitter.TwitterDetails;
-import com.simplysortedsoftware.epicfollow.twitter.TwitterFans;
-import com.simplysortedsoftware.epicfollow.twitter.TwitterFeatured;
-import com.simplysortedsoftware.epicfollow.twitter.TwitterNotFollowing;
+import com.simplysortedsoftware.epicfollow_android.twitter.TwitterDetails;
+import com.simplysortedsoftware.epicfollow_android.twitter.TwitterFans;
+import com.simplysortedsoftware.epicfollow_android.twitter.TwitterNotFollowing;
 
 import java.util.Locale;
 
@@ -74,11 +73,11 @@ public class TwitterActivity extends BaseActivity {
             switch (position) {
                 case 0:
                     return new TwitterDetails();
+                /*case 1:
+                    return new TwitterFeatured();*/
                 case 1:
-                    return new TwitterFeatured();
-                case 2:
                     return new TwitterNotFollowing();
-                case 3:
+                case 2:
                     return new TwitterFans();
                 default:
                     return new Fragment();

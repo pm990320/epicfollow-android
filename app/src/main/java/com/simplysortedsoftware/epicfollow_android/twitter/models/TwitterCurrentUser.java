@@ -1,4 +1,4 @@
-package com.simplysortedsoftware.epicfollow.twitter.models;
+package com.simplysortedsoftware.epicfollow_android.twitter.models;
 
 public class TwitterCurrentUser extends TwitterUser {
     private int credits;

@@ -1,4 +1,4 @@
-package com.simplysortedsoftware.epicfollow;
+package com.simplysortedsoftware.epicfollow_android;
 
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -12,10 +12,10 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
-import com.simplysortedsoftware.epicfollow.api.EpicFollowAPI;
-import com.simplysortedsoftware.epicfollow.api.LoginAPI;
-import com.simplysortedsoftware.epicfollow.twitter.models.TwitterCurrentUser;
-import com.simplysortedsoftware.epicfollow.twitter.models.TwitterUsersSession;
+import com.simplysortedsoftware.epicfollow_android.api.EpicFollowAPI;
+import com.simplysortedsoftware.epicfollow_android.api.LoginAPI;
+import com.simplysortedsoftware.epicfollow_android.twitter.models.TwitterCurrentUser;
+import com.simplysortedsoftware.epicfollow_android.twitter.models.TwitterUsersSession;
 
 import org.json.JSONArray;
 import org.json.JSONException;

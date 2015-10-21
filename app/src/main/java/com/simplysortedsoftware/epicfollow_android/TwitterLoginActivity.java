@@ -1,4 +1,4 @@
-package com.simplysortedsoftware.epicfollow;
+package com.simplysortedsoftware.epicfollow_android;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -9,8 +9,8 @@ import android.webkit.CookieManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.simplysortedsoftware.epicfollow.api.CookieManagement;
-import com.simplysortedsoftware.epicfollow.api.EpicFollowAPI;
+import com.simplysortedsoftware.epicfollow_android.api.CookieManagement;
+import com.simplysortedsoftware.epicfollow_android.api.EpicFollowAPI;
 
 import java.net.MalformedURLException;
 import java.net.URL;

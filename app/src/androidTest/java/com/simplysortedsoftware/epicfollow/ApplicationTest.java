@@ -1,4 +1,4 @@
-package com.simplysortedsoftware.epicfollow;
+package com.simplysortedsoftware.epicfollow_android;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

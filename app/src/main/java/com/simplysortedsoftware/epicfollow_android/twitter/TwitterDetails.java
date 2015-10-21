@@ -1,4 +1,4 @@
-package com.simplysortedsoftware.epicfollow.twitter;
+package com.simplysortedsoftware.epicfollow_android.twitter;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -14,9 +14,9 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.simplysortedsoftware.epicfollow.R;
-import com.simplysortedsoftware.epicfollow.api.EpicFollowAPI;
-import com.simplysortedsoftware.epicfollow.twitter.models.TwitterCurrentUser;
+import com.simplysortedsoftware.epicfollow_android.R;
+import com.simplysortedsoftware.epicfollow_android.api.EpicFollowAPI;
+import com.simplysortedsoftware.epicfollow_android.twitter.models.TwitterCurrentUser;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;

@@ -1,4 +1,4 @@
-package com.simplysortedsoftware.epicfollow.api;
+package com.simplysortedsoftware.epicfollow_android.api;
 
 import android.webkit.CookieManager;
 

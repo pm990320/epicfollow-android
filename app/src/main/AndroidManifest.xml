@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.simplysortedsoftware.epicfollow" >
+    package="com.simplysortedsoftware.epicfollow_android" >
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -10,7 +10,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name="com.simplysortedsoftware.epicfollow_android.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -19,20 +19,20 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".TwitterActivity"
+            android:name="com.simplysortedsoftware.epicfollow_android.TwitterActivity"
             android:label="@string/title_activity_twitter"
-            android:parentActivityName=".MainActivity" >
+            android:parentActivityName="com.simplysortedsoftware.epicfollow_android.MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.simplysortedsoftware.epicfollow.MainActivity" />
+                android:value="com.simplysortedsoftware.epicfollow_android.MainActivity" />
         </activity>
         <activity
-            android:name=".TwitterLoginActivity"
+            android:name="com.simplysortedsoftware.epicfollow_android.TwitterLoginActivity"
             android:label="@string/title_activity_twitter_login"
-            android:parentActivityName=".MainActivity" >
+            android:parentActivityName="com.simplysortedsoftware.epicfollow_android.MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.simplysortedsoftware.epicfollow.MainActivity" />
+                android:value="com.simplysortedsoftware.epicfollow_android.MainActivity" />
         </activity>
     </application>
 

@@ -1,4 +1,4 @@
-package com.simplysortedsoftware.epicfollow.twitter.models;
+package com.simplysortedsoftware.epicfollow_android.twitter.models;
 
 /**
  * Created by Patrick on 27/09/2015.
