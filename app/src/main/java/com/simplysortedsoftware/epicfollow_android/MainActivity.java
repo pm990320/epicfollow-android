@@ -14,8 +14,8 @@ import android.widget.ProgressBar;
 
 import com.simplysortedsoftware.epicfollow_android.api.EpicFollowAPI;
 import com.simplysortedsoftware.epicfollow_android.api.LoginAPI;
-import com.simplysortedsoftware.epicfollow_android.twitter.models.TwitterCurrentUser;
 import com.simplysortedsoftware.epicfollow_android.twitter.models.TwitterUsersSession;
+import com.simplysortedsoftware.epicfollow_android.twitter.models.TwitterUser;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -73,7 +73,7 @@ public class MainActivity extends BaseActivity {
                 MainActivity.this.twitterUsersSession = twitterUsersSession;
 
                 buttonsView.removeAllViews();
-                for (final TwitterCurrentUser user : twitterUsersSession.getUsers()) {
+                for (final TwitterUser user : twitterUsersSession.getUsers()) {
                     Button userButton = (Button)getLayoutInflater().inflate(R.layout.twitter_account_button, buttonsView, false);
 
                     userButton.setText("@" + user.getScreen_name());
@@ -103,7 +103,7 @@ public class MainActivity extends BaseActivity {
         Intent i = new Intent(MainActivity.this, TwitterLoginActivity.class);
         RedirectType redirectType = RedirectType.TO_LOGIN_SCREEN;
 
-        public LoginAccountTask(TwitterCurrentUser tcu) {
+        public LoginAccountTask(TwitterUser tcu) {
             qsparams = "?account=" + tcu.getUser_id();
         }
         public LoginAccountTask() { qsparams = ""; }
@@ -161,19 +161,18 @@ public class MainActivity extends BaseActivity {
                 JSONArray accounts = twitter.getJSONArray("accounts");
                 String logged_in = twitter.getString("logged_in");
 
-                List<TwitterCurrentUser> users = new ArrayList<>();
+                List<TwitterUser> users = new ArrayList<>();
                 for (int i = 0; i < accounts.length(); i++) {
                     try {
                         JSONObject details = accounts.getJSONObject(i).getJSONObject("details");
-                        TwitterCurrentUser twitterUser = new TwitterCurrentUser(
+                        TwitterUser twitterUser = new TwitterUser(
                                 accounts.getJSONObject(i).getString("user_id"),
                                 details.getString("screen_name"),
                                 details.getString("profile_image_url"),
                                 details.getString("name"),
                                 details.getString("description"),
                                 details.getInt("followers_count"),
-                                details.getInt("friends_count"),
-                                accounts.getJSONObject(i).getInt("credits")
+                                details.getInt("friends_count")
                         );
                         Log.i(LOG_TAG, "twitterUser: " + twitterUser.toString());
                         users.add(twitterUser);

@@ -16,7 +16,7 @@ import android.widget.TextView;
 
 import com.simplysortedsoftware.epicfollow_android.R;
 import com.simplysortedsoftware.epicfollow_android.api.EpicFollowAPI;
-import com.simplysortedsoftware.epicfollow_android.twitter.models.TwitterCurrentUser;
+import com.simplysortedsoftware.epicfollow_android.twitter.models.TwitterUser;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -58,14 +58,9 @@ public class TwitterDetails extends Fragment {
     private void refresh() { refresh(null); }
 
 
-    private TwitterCurrentUser currentUser;
+    private TwitterUser currentUser;
 
-
-    private Button featureButton;
-    private TextView featureText;
-    private TextView creditsText;
-
-    private void setTwitterUser(TwitterCurrentUser user) {
+    private void setTwitterUser(TwitterUser user) {
         View v = getView();
         currentUser = user;
 
@@ -76,9 +71,6 @@ public class TwitterDetails extends Fragment {
             TextView followingText = (TextView) v.findViewById(R.id.followingText);
             TextView descriptionText = (TextView) v.findViewById(R.id.descriptionText);
             ImageView userProfileImage = (ImageView) v.findViewById(R.id.userProfileImage);
-            creditsText = (TextView) v.findViewById(R.id.creditsText);
-            featureButton = (Button) v.findViewById(R.id.featureButton);
-            featureText = (TextView) v.findViewById(R.id.featureText);
 
             Picasso.with(getContext())
                     //.placeholder()
@@ -89,31 +81,7 @@ public class TwitterDetails extends Fragment {
             nameText.setText(user.getName());
             followersText.setText(Integer.toString(user.getFollowersCount()) + " followers");
             followingText.setText(Integer.toString(user.getFollowingCount()) + " following");
-            creditsText.setText(Integer.toString(user.getCredits()) + " credits");
 
-            if (user.getCredits() >= EpicFollowAPI.TWITTER_FEATURE_CREDIT_COST) {
-                featureButton.setVisibility(View.VISIBLE);
-                featureText.setText("You can be featured for " + EpicFollowAPI.TWITTER_FEATURE_CREDIT_COST + " credits.");
-            } else {
-                featureButton.setVisibility(View.GONE);
-                featureText.setText("You must have " + EpicFollowAPI.TWITTER_FEATURE_CREDIT_COST + " credits to be featured.");
-            }
-
-            featureButton.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    new FeatureTask(new Runnable() {
-                        @Override
-                        public void run() {
-                            featureButton.setVisibility(View.INVISIBLE);
-                            featureText.setText("You have been featured.");
-
-                            currentUser.setCredits(currentUser.getCredits() - EpicFollowAPI.TWITTER_FEATURE_CREDIT_COST);
-                        }
-                    }).execute();
-                    return true;
-                }
-            });
         } catch (NullPointerException e) {
             Log.d(LOG_TAG, "details fragment not in view", e);
         }
@@ -127,7 +95,7 @@ public class TwitterDetails extends Fragment {
             this.runafter = runafter;
         }
 
-        private TwitterCurrentUser twitterUser;
+        private TwitterUser twitterUser;
 
         @Override
         protected void onPostExecute(Void aVoid) {
@@ -155,15 +123,14 @@ public class TwitterDetails extends Fragment {
                     if (accounts.getJSONObject(i).getInt("user_id") == logged_in) {
                         // found
                         JSONObject details = accounts.getJSONObject(i).getJSONObject("details");
-                        twitterUser = new TwitterCurrentUser(
+                        twitterUser = new TwitterUser(
                                 details.getString("user_id"),
                                 details.getString("screen_name"),
                                 details.getString("profile_image_url"),
                                 details.getString("name"),
                                 details.getString("description"),
                                 details.getInt("followers_count"),
-                                details.getInt("friends_count"),
-                                accounts.getJSONObject(i).getInt("credits")
+                                details.getInt("friends_count")
                         );
                         break;
                     }
@@ -175,7 +142,7 @@ public class TwitterDetails extends Fragment {
         }
     }
 
-    class FeatureTask extends AsyncTask<Void, Void, Void> {
+    /*class FeatureTask extends AsyncTask<Void, Void, Void> {
         public FeatureTask() { }
 
         private Runnable runafter;
@@ -206,5 +173,5 @@ public class TwitterDetails extends Fragment {
             }
             return null;
         }
-    }
+    }*/
 }

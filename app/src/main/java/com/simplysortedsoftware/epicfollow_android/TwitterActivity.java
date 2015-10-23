@@ -87,7 +87,7 @@ public class TwitterActivity extends BaseActivity {
         @Override
         public int getCount() {
             // Show 3 total pages.
-            return 4;
+            return 3;
         }
 
         @Override
@@ -96,11 +96,11 @@ public class TwitterActivity extends BaseActivity {
             switch (position) {
                 case 0:
                     return getString(R.string.title_details).toUpperCase(l);
+                /*case 1:
+                    return getString(R.string.title_featured).toUpperCase(l);*/
                 case 1:
-                    return getString(R.string.title_featured).toUpperCase(l);
-                case 2:
                     return getString(R.string.title_notfollowing).toUpperCase(l);
-                case 3:
+                case 2:
                     return getString(R.string.title_fans).toUpperCase(l);
             }
             return null;
